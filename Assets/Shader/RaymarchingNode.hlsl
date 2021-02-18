@@ -27,12 +27,12 @@ float GetDist(float3 p){
 //
 float3 GetGravity(float3 position, float3 direction, float STEP_SIZE, float SCHWARZSCHILD )
 {
-    return normalize((direction + -((position * STEP_SIZE * (1.18f * SCHWARZSCHILD)) / pow( length(position), 3))));
+    return normalize((direction + ((position * STEP_SIZE * (1.18f * SCHWARZSCHILD)) / pow( length(position), 3))));
 }
 
 
-float GetDistBlackHole(float3 position){
-    return GetDistSphere(position,float3(0,0,0),200);
+float GetDistBlackHole(float3 position, float SCHWARZSCHILD){
+    return GetDistSphere(position,float3(0,0,0),SCHWARZSCHILD);
 }
 
 
@@ -40,14 +40,16 @@ float GetDistBlackHole(float3 position){
 //  = 1 -> blackhole
 //  = 2 -> geometry
 
-void RaymarchHit(float3 position, float3 direction, float MAX_STEPS, float STEP_SIZE, float SCHWARZSCHILD, out float4 nPos, out float3 nDir  )
+void RaymarchHit(float3 position, float3 direction, float MAX_STEPS, float STEP_SIZE, float SCHWARZSCHILD, out bool insideBH, out float3 nDir  )
 {
     float dS = 0; //Distancae to Scene/Surface
     float3 lastPosition = position;
 
+    insideBH = false;
+
     for(int i = 0; i < MAX_STEPS; i++)
     {
-        dS = GetDist(position); //Get Distance to next surface
+        // dS = GetDist(position); //Get Distance to next surface
 
         //Calculate new position
         position += GetGravity(position,direction, STEP_SIZE, SCHWARZSCHILD) * STEP_SIZE;
@@ -60,42 +62,33 @@ void RaymarchHit(float3 position, float3 direction, float MAX_STEPS, float STEP_
         //Save new position
         lastPosition = position;
 
-        if(GetDistBlackHole(position) < 0){
+        if(GetDistBlackHole(position,SCHWARZSCHILD) < 0){
             //Hit the black hole
-            nPos =  float4(0,0,0,1);
+            insideBH = true;
             break;
         }
 
-         if(dS < STEP_SIZE)    {
-            nPos = float4(position.xyz,2);  
-            break;
-         }                
-                         
+        //  if(dS < STEP_SIZE)    {
+        //     nPos = float4(position.xyz,2);  
+        //     break;
+        //  }             
     }
 
-    //return 0 if no object was hit
-    nPos = float4(position.xzy,0);   
 }
 
 
 
-void Raymarching_float(float3 position, float3 direction, float MAX_STEPS, float STEP_SIZE, float SCHWARZSCHILD, out float3 color, out float alpha, out float3 nDirection){
-    // float3 viewDirection = normalize(position - _WorldSpaceCameraPos);
+void Raymarching_float(float3 position, float3 direction, float MAX_STEPS, float STEP_SIZE, float SCHWARZSCHILD, out float3 color, out float3 nDirection){
 
-    float4 nPos;
+    bool insideBH;
     float3 nDir;
-    RaymarchHit(position,direction, MAX_STEPS, STEP_SIZE, SCHWARZSCHILD, nPos,nDir );
-    if(nPos.w = 2){
-        color = float3(nPos.x,nPos.y,nPos.z);
-        alpha = 1;
+    RaymarchHit(position,direction, MAX_STEPS, STEP_SIZE, SCHWARZSCHILD, insideBH,nDir);
 
-    }else if(nPos.w = 1){
+    if(insideBH){
         color = float3(0,0,0);
-        alpha = 1;  
     }else{
-        color = float3(nPos.x,nPos.y,nPos.z);
-        alpha = 0;
-    }
+        color = float3(1,1,1);
+    }    
 
     nDirection = nDir;
 }
