@@ -20,8 +20,10 @@ float GetDistTorus(float3 p, float innerRadius, float outerRadius)
 //
 float3 GetGravity(float3 position, float3 direction, float STEP_SIZE, float gravitationalConstant, float mass )
 {
-    return (4*gravitationalConstant*mass)/(pow(STEP_SIZE,2)*position);//Schwarzes loch im Ursprung
+    float force = (gravitationalConstant*mass)/(pow(position,2));//Schwarzes loch im Ursprung
+    return force * -position;
 }
+
 
 
 float GetDistBlackHole(float3 position, float SCHWARZSCHILD){
