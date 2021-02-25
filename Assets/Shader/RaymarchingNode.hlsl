@@ -51,8 +51,6 @@ void RaymarchHit(
 
         //Calculate new direction with new and old position
         direction = normalize(position - lastPosition);
-
-        nDir = -direction;
         
         //Save new position
         lastPosition = position;
@@ -70,6 +68,7 @@ void RaymarchHit(
             break;
         }
     }
+        nDir = - direction;
 
 }
 
