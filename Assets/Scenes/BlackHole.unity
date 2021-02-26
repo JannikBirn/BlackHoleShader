@@ -582,7 +582,7 @@ GameObject:
   - component: {fileID: 2107554727}
   - component: {fileID: 2107554726}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Black Hole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -711,10 +711,10 @@ PrefabInstance:
       propertyPath: m_Text
       value: 'Shader: RayMarching Visuell
 
-        Max_Steps: 200
+        Max_Steps: 600
 
         Step_Size:
-        20
+        10
 
         Schwarzschild: 20'
       objectReference: {fileID: 0}
