@@ -18,9 +18,12 @@ float GetDistTorus(float3 p, float innerRadius, float outerRadius)
 //
 //Gravity
 //
-float3 GetGravity(float3 position, float3 direction, float STEP_SIZE, float SCHWARZSCHILD )
+float3 GetGravity(float3 position, float3 direction, float STEP_SIZE, float gravitationalConstant, float mass )
 {
-    return normalize((direction + ((position * -STEP_SIZE * (1.18f * SCHWARZSCHILD)) / pow( length(position), 3))));
+    //Gravitationsformel: F=(G*M)/(r^2)
+    float force = (gravitationalConstant*mass)/(pow(length(position),2));//Schwarzes Loch im Ursprung -> length(position) = Abstand
+    float3 force3 = normalize(-position)*force;
+    return normalize(direction + force3);
 }
 
 
@@ -36,6 +39,8 @@ void RaymarchHit(
     float SCHWARZSCHILD,
     float2 accretionDisk,
     float4 AccretionDiskColor,
+    float gravitationalConstant,
+    float mass,
     out float4 color,
     out float3 nDir  )
 {
@@ -47,7 +52,7 @@ void RaymarchHit(
     for(int i = 0; i < MAX_STEPS; i++)
     {
         //Calculate new position
-        position += GetGravity(position,direction, STEP_SIZE, SCHWARZSCHILD) * STEP_SIZE;
+        position += GetGravity(position,direction, STEP_SIZE, gravitationalConstant, mass) * STEP_SIZE;
 
         //Calculate new direction with new and old position
         direction = normalize(position - lastPosition);
@@ -83,6 +88,8 @@ void Raymarching_float(
     float SCHWARZSCHILD,
     float2 accretionDisk,
     float4 AccretionDiskColor,
+    float gravitationalConstant,
+    float mass,
     out float4 color,
     out float3 nDirection)
 {
@@ -94,6 +101,8 @@ void Raymarching_float(
         SCHWARZSCHILD,
         accretionDisk,
         AccretionDiskColor,
+        gravitationalConstant,
+        mass,
         color,
         nDirection);
 }
