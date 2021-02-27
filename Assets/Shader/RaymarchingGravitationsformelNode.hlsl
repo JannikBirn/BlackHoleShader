@@ -20,7 +20,8 @@ float GetDistTorus(float3 p, float innerRadius, float outerRadius)
 //
 float3 GetGravity(float3 position, float3 direction, float STEP_SIZE, float gravitationalConstant, float mass )
 {
-    float force = (gravitationalConstant*mass)/(pow(length(position),2));//Schwarzes Loch im Ursprung
+    //Gravitationsformel: F=(G*M)/(r^2)
+    float force = (gravitationalConstant*mass)/(pow(length(position),2));//Schwarzes Loch im Ursprung -> length(position) = Abstand
     float3 force3 = normalize(-position)*force;
     return normalize(direction + force3);
 }
